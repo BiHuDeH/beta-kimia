@@ -71,8 +71,8 @@ def create_styled_report(df):
     ws.title = "Report"
     
     # Style variables
-    header_font = Font(bold=True, size=13)
-    regular_font = Font(size=12)
+    header_font = Font(bold=True, size=14)  # Header font set to bold 14
+    regular_font = Font(size=12)            # Body font set to 12
     center_align = Alignment(horizontal="center", vertical="center")
     thin_border = Border(left=Side(style="thin", color="333333"),
                          right=Side(style="thin", color="333333"),
@@ -104,17 +104,17 @@ def create_styled_report(df):
             cell.alignment = center_align
             cell.border = thin_border
             # Apply number format
-            if cell.column_letter != 'A':  # Skip date column
-                cell.number_format = '#,##0.00'
+            if cell.column == 1:  # First column for date (Shamsi date format)
+                cell.number_format = '[$-fa-IR,700]yyyy/mm/dd;@'
             else:
-                cell.number_format = '[$-fa-IR,700]yyyy/mm/dd;@'  # Shamsi date format for Persian locale
+                cell.number_format = '#,##0.00'  # Other columns as numbers
 
     # Set column widths and row heights
     for col in ws.columns:
         col_letter = col[0].column_letter
-        ws.column_dimensions[col_letter].width = 15
-    for row in range(2, ws.max_row + 1):
-        ws.row_dimensions[row].height = 20
+        ws.column_dimensions[col_letter].width = 20  # Set column width to 20
+    for row in range(1, ws.max_row + 1):
+        ws.row_dimensions[row].height = 30           # Set row height to 30
 
     # Define the table range and add a table with Total Row
     last_column_letter = get_column_letter(ws.max_column)
@@ -122,9 +122,11 @@ def create_styled_report(df):
     tab = Table(displayName="ReportTable", ref=table_ref)
     style = TableStyleInfo(name="TableStyleMedium9", showRowStripes=True, showColumnStripes=False)
     tab.tableStyleInfo = style
-    tab.showTotals = True
-    for idx, col in enumerate(tab.tableColumns):
-        col.totalsRowLabel = "Total" if idx == 0 else None  # Set only the first column's total label
+    tab.showTotals = True  # Activate total row to show column sums
+
+    # Set Total Row sum options for numeric columns
+    for col in range(2, ws.max_column + 1):  # Skip first column (Date)
+        tab.tableColumns[col - 1].totalsRowFunction = "sum"
 
     ws.add_table(tab)
 
