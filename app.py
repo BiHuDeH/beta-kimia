@@ -15,7 +15,7 @@ if uploaded_file:
     st.write("Available sheet names in the uploaded file:", excel_file.sheet_names)
     
     # Try to specify the exact sheet name after confirming
-    sheet_name = 'بهای تمام شده کالای ساخته شده'  # Modify this once you verify the exact name
+    sheet_name = 'products'  # Modify this once you verify the exact name
     
     # Check if the desired sheet name is actually in the file
     if sheet_name in excel_file.sheet_names:
